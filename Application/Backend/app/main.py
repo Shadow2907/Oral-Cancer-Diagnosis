@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from app.routes import account
-from app.configs.database import init_db
-from app.configs.cloudinary import init_cloudinary
+from .routes import account
+from .configs.database import init_db
+from .configs.cloudinary import init_cloudinary
 import os, redis
 
 app = FastAPI()
