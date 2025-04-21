@@ -1,0 +1,700 @@
+/* src/assets/index.css */
+
+/* --- Global Variables and Reset --- */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #f0f4f8;
+    --card-background: #ffffff;
+    --text-color: #2c3e50;
+}
+
+* {
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* --- Base Layout (Common or Mobile First) --- */
+.app-container { /* Replaces mobile-container/desktop-container logic partially */
+    height: 100vh;
+    max-width: 1200px; /* Max width for desktop */
+    margin: 0 auto;    /* Center desktop */
+    position: relative;
+    display: flex; /* Use flex for desktop layout */
+    flex-direction: column; /* Default mobile stack */
+    overflow: hidden; /* Prevent body scroll */
+    background-color: var(--background-color); /* Mobile background */
+}
+
+.content-area { /* Common content area */
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px; /* Mobile padding */
+    height: 100%; /* Ensure it tries to take height */
+    scrollbar-width: none; /* Hide scrollbar for mobile */
+    -ms-overflow-style: none;
+}
+.content-area::-webkit-scrollbar { /* Hide scrollbar for mobile */
+    display: none;
+}
+
+.screen {
+    display: block; /* Let React Router handle showing/hiding */
+    opacity: 1;
+    transform: translateY(0);
+    /* Remove display:none, opacity, transform transitions - handled by React */
+}
+
+.screen-title {
+    font-size: 22px; /* Mobile size */
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    text-align: center; /* Mobile */
+}
+
+.card {
+    background-color: var(--card-background);
+    border-radius: 15px;
+    padding: 20px; /* Mobile padding */
+    margin-bottom: 15px; /* Mobile margin */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Header --- */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 0 10px 0; /* Adjust padding if needed */
+}
+
+.account-info-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.username {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.login-button, .logout-header {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none; /* Ensure links look like buttons */
+}
+.login-button:hover {
+    background-color: #2980b9;
+}
+.logout-header {
+    background-color: #e74c3c;
+}
+.logout-header:hover {
+    background-color: #c0392b;
+}
+
+
+/* --- Upload Section --- */
+.upload-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Mobile gap */
+    position: relative;
+}
+
+.upload-area {
+    position: relative;
+    width: 100%;
+    min-height: 150px; /* Mobile height */
+    background: linear-gradient(135deg, #f6f8f9 0%, #e5ebee 100%);
+    border: 2px dashed var(--primary-color);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.file-input { display: none; }
+
+.upload-label {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+}
+.upload-label:hover { background-color: rgba(52, 152, 219, 0.1); }
+.upload-label i {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+.upload-label p { margin: 0; font-size: 1rem; /* Mobile size */ }
+
+.uploaded-image-preview {
+    max-width: 200px;
+    margin-top: 15px; /* Mobile margin */
+    border-radius: 10px;
+    display: block; /* Ensure it behaves like a block */
+    margin-left: auto; /* Center it */
+    margin-right: auto;
+}
+
+.notification {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 8px 15px; /* Mobile padding */
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 10;
+}
+.notification.show { opacity: 1; }
+
+.action-button { /* Base class for check/delete */
+    color: white;
+    border: none;
+    padding: 10px 20px; /* Mobile padding */
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px; /* Mobile margin */
+    cursor: pointer;
+    width: 100%;
+    max-width: 200px;
+}
+.check-button { background-color: var(--primary-color); }
+.check-button:hover { background-color: #2980b9; }
+.delete-button { background-color: #e74c3c; }
+.delete-button:hover { background-color: #c0392b; }
+
+/* --- History --- */
+.history-grid { /* For desktop */
+    display: grid;
+    gap: 15px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #f6f8f9 0%, #e5ebee 100%);
+    padding: 15px;
+    border-radius: 10px;
+}
+.history-item p { margin: 5px 0; } /* Mobile margin */
+
+
+/* --- Account & Auth --- */
+.account-card { /* Desktop specific? */
+    max-width: 400px;
+    margin: 0 auto; /* Center */
+    text-align: center;
+}
+
+.account-info { /* Mobile base */
+    text-align: center;
+}
+
+.logout-button {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 15px; /* Mobile padding */
+    border-radius: 10px;
+    margin-top: 15px; /* Mobile margin */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+.logout-button:hover { background-color: #c0392b; }
+
+.login-prompt {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    padding: 20px; /* Add padding when it's the main content */
+}
+
+.auth-options {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.auth-button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+}
+
+.login-option { background-color: var(--primary-color); }
+.login-option:hover { background-color: #2980b9; }
+.register-option { background-color: var(--secondary-color); }
+.register-option:hover { background-color: #27ae60; }
+
+/* --- Login/Signup Pages --- */
+.auth-page-container { /* Centering container for login/signup */
+    display: flex;          /* <<< ADD: Enable Flexbox */
+    justify-content: center;/* <<< ADD: Center horizontally */
+    align-items: center;    /* <<< ADD: Center vertically */
+    min-height: 100vh;      /* Ensure it takes full viewport height */
+    padding: 20px;          /* Add some padding around the form */
+    background-color: var(--background-color); /* Ensure background covers page */
+}
+
+/* Keep other auth-related styles as they were */
+.auth-form-container { /* Replaces login-container/registration-container */
+    background-color: var(--card-background);
+    border-radius: 15px;
+    padding: 30px;
+    width: 100%; /* Take available width within the flex container */
+    max-width: 450px; /* Limit max width of the form itself */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    position: relative; /* For close button positioning */
+}
+
+.auth-header { /* Replaces login-header/registration-header */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.auth-title { /* Replaces login-title/registration-title */
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.auth-close { /* Replaces login-close/registration-close */
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+.auth-close:hover { color: var(--primary-color); }
+
+.form-group { margin-bottom: 20px; }
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group select { /* Add select if needed */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    background-color: var(--card-background); /* Ensure bg */
+}
+.form-group input:focus { border-color: var(--primary-color); }
+
+.form-row { display: flex; gap: 15px; }
+.form-row .form-group { flex: 1; }
+
+.gender-group { display: flex; gap: 20px; align-items: center; }
+.gender-option { display: flex; align-items: center; gap: 5px; }
+.gender-option input[type="radio"] { margin: 0; }
+.gender-option label { display: flex; align-items: center; gap: 5px; cursor: pointer; margin-bottom: 0; /* Override default label margin */ }
+.gender-option i { font-size: 1.2rem; color: var(--primary-color); }
+
+.auth-submit { /* Replaces login-submit/registration-submit */
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    width: 100%;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px; /* Add some space before submit */
+}
+.auth-submit:hover { background-color: #2980b9; }
+
+.auth-links { /* Common links below form */
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.auth-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+.auth-links a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+.form-switch-link { /* For the "Already have an account?" link */
+     display: block;
+     text-align: center;
+     margin-top: 20px;
+     color: var(--primary-color);
+     text-decoration: none;
+}
+.form-switch-link:hover { text-decoration: underline; }
+
+/* --- Sidebar (Common Styles) --- */
+.sidebar {
+    background-color: var(--card-background);
+    /* Other styles will be media-query specific */
+}
+.sidebar-item {
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 10px;
+}
+.sidebar-item i { opacity: 0.7; }
+.sidebar-item.active { color: var(--primary-color); }
+.sidebar-item.active i { opacity: 1; }
+
+
+/* --- Chatbox (Common Styles) --- */
+.chat-icon {
+    position: fixed;
+    background-color: var(--primary-color);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    /* Position depends on layout */
+}
+.chat-icon:hover { background-color: #2980b9; }
+.chat-icon i { font-size: 1.5rem; }
+
+.chatbox {
+    position: fixed;
+    width: 300px;
+    max-height: 400px;
+    background-color: var(--card-background);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    display: flex; /* Use flex for internal layout */
+    flex-direction: column;
+    z-index: 1000;
+    overflow: hidden;
+    /* Position depends on layout */
+}
+
+.chatbox-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+.chatbox-close { cursor: pointer; font-size: 1.2rem; }
+
+.chatbox-body {
+    padding: 10px;
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 100px; /* Give it some minimum height */
+    scrollbar-width: thin;
+}
+.chatbox-body::-webkit-scrollbar { width: 6px; }
+.chatbox-body::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+}
+
+.chat-message {
+    margin: 10px 0;
+    padding: 8px 12px;
+    border-radius: 10px;
+    max-width: 80%;
+    line-height: 1.4; /* Improve readability */
+    word-wrap: break-word; /* Ensure long words break */
+}
+.chat-message.bot {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: var(--text-color); /* Use text color for contrast */
+    align-self: flex-start;
+}
+.chat-message.user {
+    background-color: var(--primary-color);
+    color: white;
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.chatbox-footer {
+    padding: 10px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+.chatbox-input {
+    flex-grow: 1;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 8px;
+    outline: none;
+    font-size: 0.9rem;
+    margin-right: 10px;
+}
+.chatbox-send {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+.chatbox-send:hover { background-color: #2980b9; }
+
+
+/* ================================================== */
+/* ---       Desktop Specific Styles (>= 768px)    --- */
+/* ================================================== */
+@media (min-width: 768px) {
+    .app-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 100vh;
+        background-color: white; /* Desktop background */
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        flex-direction: row; /* Side by side layout */
+        border-radius: 0; /* No radius for full screen usually */
+    }
+
+    .content-area {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 30px; /* Desktop padding */
+        background-color: var(--background-color); /* Desktop content bg */
+        height: 100vh; /* Full height */
+        scrollbar-width: auto; /* Show scrollbar */
+        -ms-overflow-style: auto;
+    }
+    .content-area::-webkit-scrollbar {
+        display: block; /* Show scrollbar */
+        width: 8px;
+    }
+     .content-area::-webkit-scrollbar-thumb {
+        background-color: var(--primary-color);
+        border-radius: 10px;
+    }
+
+    .screen-title {
+        text-align: left; /* Desktop */
+        font-size: 24px; /* Desktop */
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+    }
+
+    .card {
+        padding: 25px; /* Desktop padding */
+        margin-bottom: 20px; /* Desktop margin */
+    }
+
+    /* --- Desktop Sidebar --- */
+    .sidebar {
+        width: 200px;
+        min-width: 200px;
+        max-width: 200px;
+        background-color: var(--card-background);
+        border-right: 1px solid #e0e0e0;
+        padding: 20px;
+        display: flex; /* Enabled for desktop */
+        flex-direction: column;
+        flex-shrink: 0;
+        height: 100vh; /* Full height */
+        position: static; /* Override fixed/mobile */
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .sidebar-logo {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .sidebar-item {
+        padding: 12px 15px;
+        gap: 10px;
+        flex-direction: row; /* Icons beside text */
+    }
+    .sidebar-item span { display: inline; /* Show text */}
+    .sidebar-item i { font-size: 1.2rem; margin-bottom: 0; }
+    .sidebar-item.active { background-color: rgba(52, 152, 219, 0.1); }
+
+    /* --- Desktop Upload --- */
+     .upload-section { gap: 20px; }
+     .upload-area { min-height: 200px; }
+     .upload-label p { font-size: 1.1rem; }
+     .notification { padding: 10px 20px; }
+     .action-button { padding: 12px 20px; margin-top: 20px; }
+     .uploaded-image-preview { margin-top: 20px; }
+
+    /* --- Desktop History --- */
+    /* Uses .history-grid defined above */
+
+    /* --- Desktop Account --- */
+    .logout-button { padding: 12px 15px; margin-top: 20px; }
+
+    /* --- Desktop Chat --- */
+    .chat-icon {
+        bottom: 20px;
+        right: 20px;
+    }
+    .chatbox {
+        bottom: 80px;
+        right: 20px;
+    }
+}
+
+
+/* ================================================== */
+/* ---       Mobile Specific Styles (< 768px)      --- */
+/* ================================================== */
+@media (max-width: 767px) {
+    .app-container {
+        max-width: 450px; /* Typical mobile width */
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        border-radius: 0px; /* Often no radius on mobile */
+        height: 100%; /* Ensure full viewport height */
+        overflow: hidden; /* Clip content */
+    }
+
+     .content-area {
+        padding: 15px; /* Slightly less padding */
+        padding-bottom: 90px; /* Space for bottom nav */
+        height: 100%; /* Take full height */
+        overflow-y: auto; /* Allow scrolling */
+     }
+
+    /* --- Mobile Sidebar (Bottom Nav) --- */
+    .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 450px; /* Match container width */
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-around;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        height: 70px;
+        align-items: center;
+        padding-bottom: 10px; /* Space for text */
+        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+        border-right: none; /* No right border */
+        width: 100%; /* Full width */
+        z-index: 100; /* Above content */
+    }
+
+    .sidebar-logo { display: none; } /* Hide logo */
+    .sidebar-menu { /* Override desktop flex */
+        display: contents; /* Let items be direct children of .sidebar flex */
+    }
+
+    .sidebar-item {
+        flex-direction: column;
+        padding: 5px;
+        gap: 0;
+        flex: 1; /* Distribute space evenly */
+        text-align: center;
+        font-size: 0.8rem; /* Smaller text */
+    }
+    .sidebar-item i { font-size: 1.5rem; margin-bottom: -2px; }
+    .sidebar-item.active { background-color: transparent; } /* No background */
+
+
+    /* --- Mobile Chat --- */
+    .chat-icon {
+        bottom: 90px; /* Above bottom nav */
+        right: 15px;
+    }
+    .chatbox {
+        bottom: 150px; /* Above chat icon */
+        right: 15px;
+        width: calc(100% - 30px); /* Almost full width */
+        max-width: 320px; /* Limit max width */
+    }
+
+    /* --- Hide Desktop elements --- */
+    .sidebar-logo { display: none; }
+
+}
+

@@ -1,0 +1,431 @@
+/* --- Global Variables and Reset --- */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --background-color: #f0f4f8;
+    --card-background: #ffffff;
+    --text-color: #2c3e50;
+  }
+  
+  * {
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+  
+  body,
+  html {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+  }
+  
+  /* --- Base Layout --- */
+  .app-container {
+    height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--background-color);
+  }
+  
+  .admin-container {
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .content-area {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+    height: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .content-area::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .screen {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .screen-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    text-align: center;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+  }
+  
+  .card {
+    background-color: var(--card-background);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* --- Admin Sidebar --- */
+  .admin-sidebar {
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    background-color: var(--card-background);
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 100vh;
+    position: static;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  
+  .sidebar-logo {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+  }
+  
+  .sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .sidebar-item {
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 10px;
+    padding: 12px 15px;
+  }
+  
+  .sidebar-item i {
+    opacity: 0.7;
+  }
+  
+  .sidebar-item.active {
+    color: var(--primary-color);
+    background-color: rgba(52, 152, 219, 0.1);
+  }
+  
+  .sidebar-item.active i {
+    opacity: 1;
+  }
+  
+  /* --- Table Styles --- */
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  th,
+  td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+  }
+  
+  td {
+    background-color: var(--card-background);
+  }
+  
+  /* --- Action Buttons --- */
+  .action-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .action-button {
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .edit-button {
+    background-color: var(--primary-color);
+    color: white;
+  }
+  .edit-button:hover {
+    background-color: #2980b9;
+  }
+  
+  .delete-button {
+    background-color: #e74c3c;
+    color: white;
+  }
+  .delete-button:hover {
+    background-color: #c0392b;
+  }
+  
+  .reset-button {
+    background-color: #f39c12;
+    color: white;
+  }
+  .reset-button:hover {
+    background-color: #e67e22;
+  }
+  
+  /* --- Status Indicator --- */
+  .status-indicator {
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: 600;
+  }
+  
+  .status-up {
+    background-color: var(--secondary-color);
+    color: white;
+  }
+  
+  .status-down {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  /* --- Log Entry --- */
+  .log-entry {
+    background: linear-gradient(135deg, #f6f8f9 0%, #e5ebee 100%);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  
+  /* --- Submit Button --- */
+  .submit-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .submit-button:hover {
+    background-color: #2980b9;
+  }
+  
+  /* --- Login Page --- */
+  .auth-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: var(--background-color);
+  }
+  
+  .auth-form-container {
+    background-color: var(--card-background);
+    border-radius: 15px;
+    padding: 30px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  
+  .auth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .auth-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+  
+  .auth-close {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--text-color);
+  }
+  .auth-close:hover {
+    color: var(--primary-color);
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  
+  .form-group input[type="text"],
+  .form-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    background-color: var(--card-background);
+  }
+  .form-group input:focus {
+    border-color: var(--primary-color);
+  }
+  
+  .auth-submit {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    width: 100%;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .auth-submit:hover {
+    background-color: #2980b9;
+  }
+  
+  /* --- Responsive Adjustments --- */
+  @media (min-width: 768px) {
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 100vh;
+      flex-direction: row;
+    }
+  
+    .content-area {
+      padding: 30px;
+      background-color: var(--background-color);
+      height: 100vh;
+      scrollbar-width: auto;
+      -ms-overflow-style: auto;
+    }
+    .content-area::-webkit-scrollbar {
+      display: block;
+      width: 8px;
+    }
+    .content-area::-webkit-scrollbar-thumb {
+      background-color: var(--primary-color);
+      border-radius: 10px;
+    }
+  
+    .screen-title {
+      text-align: left;
+      font-size: 24px;
+    }
+  
+    .card {
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .app-container {
+      max-width: 450px;
+      border-radius: 0px;
+      height: 100%;
+      overflow: hidden;
+    }
+  
+    .content-area {
+      padding: 15px;
+      height: 100%;
+      overflow-y: auto;
+    }
+  
+    .admin-container {
+      flex-direction: column;
+    }
+  
+    .admin-sidebar {
+      position: static;
+      width: 100%;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px;
+    }
+  
+    .admin-sidebar .sidebar-menu {
+      flex-direction: row;
+      justify-content: space-around;
+    }
+  
+    .admin-sidebar .sidebar-item {
+      flex-direction: column;
+      padding: 5px;
+      gap: 0;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+  
+    .admin-sidebar .sidebar-item i {
+      font-size: 1.5rem;
+      margin-bottom: -2px;
+    }
+  
+    .admin-sidebar .sidebar-item.active {
+      background-color: transparent;
+    }
+  
+    .admin-sidebar .sidebar-logo {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+  
+    .table-container {
+      font-size: 0.9rem;
+    }
+  
+    th,
+    td {
+      padding: 10px;
+    }
+  
+    .action-buttons {
+      flex-direction: column;
+      gap: 5px;
+    }
+  
+    .action-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
