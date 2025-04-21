@@ -1,7 +1,7 @@
 # Oral-Cancer-Diagnosis
 Data Mining
 
-**Thành viên**
+**Thành viên** \
 Leader:
 BA:
 AI
