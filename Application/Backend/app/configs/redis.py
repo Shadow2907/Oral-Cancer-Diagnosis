@@ -10,12 +10,8 @@ import redis
 
 load_dotenv()
 
-redis_client = Redis(
-    host=os.getenv('REDIS_HOST', 'localhost'),
-    port=int(os.getenv('REDIS_PORT', 6379)),
-    db=int(os.getenv('REDIS_DB', 0)),
-    password=os.getenv('REDIS_PASSWORD'),
-    decode_responses=True
+redis_client = Redis.from_url(
+    os.getenv("REDIS_URL", "redis://localhost:6379/0"), decode_responses=True
 )
 
 # async def init_redis():
