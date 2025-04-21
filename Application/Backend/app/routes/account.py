@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, APIRouter
-from ..controllers import account
+from ..controllers.admin import account
 from ..configs.database import init_db
 
 router = APIRouter()

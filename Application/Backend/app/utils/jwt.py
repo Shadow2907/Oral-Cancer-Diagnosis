@@ -186,3 +186,14 @@ async def get_active_user(
             status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive"
         )
     return current_account
+
+
+async def get_admin(
+    db: AsyncSession = Depends(get_db),
+    current_account: models.Account = Depends(get_active_user),
+):
+    if current_account.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required"
+        )
+    return current_account

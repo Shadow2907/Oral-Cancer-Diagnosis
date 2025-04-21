@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from .routes import account
+from .routes import authentication, diagnosis, account
 from .configs.database import init_db
 from .configs.cloudinary import init_cloudinary
 import os, redis
@@ -40,4 +40,6 @@ async def on_startup():
     init_cloudinary()
 
 
+app.include_router(authentication.router, prefix="/api", tags=["account"])
+app.include_router(diagnosis.router, prefix="/api", tags=["diagnosis"])
 app.include_router(account.router, prefix="/api", tags=["account"])

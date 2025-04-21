@@ -13,7 +13,7 @@ class DiagnosisCreate(DiagnosisBase):
 
 
 class DiagnosisResponse(DiagnosisBase):
-    dia_id: int
+    dia_id: str
 
     class Config:
         orm_mode = True
