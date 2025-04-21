@@ -1,6 +1,4 @@
 # Oral-Cancer-Diagnosis
-Data Mining
-
 **Thành viên**:
 
 Leader: Nguyễn Trung Hiếu
