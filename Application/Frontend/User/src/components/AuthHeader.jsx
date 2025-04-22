@@ -3,16 +3,16 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const AuthHeader = () => {
-    const { isLoggedIn, username, logout } = useAuth();
+    const { isLoggedIn, username, logout, isLoggingOut } = useAuth();
 
     return (
         <>
             {isLoggedIn ? (
                 <div className="account-info-header">
                     <span className="username">{username}</span>
-                    <button className="logout-header" onClick={logout}>
+                    <button className="logout-header" onClick={logout} disabled={isLoggingOut}>
                         <i className="bi bi-box-arrow-right"></i>
-                        Đăng Xuất
+                        {isLoggingOut ? " Đang đăng xuất..." : " Đăng Xuất"}
                     </button>
                 </div>
             ) : (

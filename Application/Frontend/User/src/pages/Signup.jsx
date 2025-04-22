@@ -1,9 +1,9 @@
-// src/pages/Signup.jsx
+
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Use environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; 
 
 const Signup = () => {
     const [username, setUsername] = useState('');
@@ -12,13 +12,13 @@ const Signup = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate(); 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
 
-        // --- Frontend Validation ---
+        
         if (!username || !email || !password) {
              setError('Vui lòng điền đầy đủ Tên đăng nhập, Email và Mật khẩu.');
              return;
@@ -31,7 +31,7 @@ const Signup = () => {
             setError('Vui lòng nhập địa chỉ email hợp lệ.');
             return;
         }
-        // --- End Frontend Validation ---
+        
 
         if (!API_BASE_URL) {
             setError("Lỗi cấu hình: Không tìm thấy địa chỉ API.");
@@ -57,8 +57,8 @@ const Signup = () => {
             console.log('Initial Registration successful (OTP likely sent):', response.data);
 
             
-            alert('Đăng ký thành công bước đầu. Vui lòng kiểm tra email để nhận mã OTP và xác thực tài khoản.'); // Updated alert
-            navigate('/verify-otp', { state: { email: email } }); // Navigate with email state
+            alert('Đăng ký thành công bước đầu. Vui lòng kiểm tra email để nhận mã OTP và xác thực tài khoản.');
+            navigate('/verify-otp', { state: { email: email } }); 
             
 
         } catch (err) {
@@ -89,7 +89,7 @@ const Signup = () => {
         }
     };
 
-    // --- JSX remains the same as the previous version (with only username input) ---
+    
     return (
          <div className="auth-page-container">
             <div className="auth-form-container">

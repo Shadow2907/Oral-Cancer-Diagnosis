@@ -72,7 +72,6 @@ const Login = () => {
             // Update Auth Context with the username used for login
             login(username); // Pass the logged-in username to the context
 
-            alert('Đăng nhập thành công!');
             navigate('/'); // Redirect to home page
 
         } catch (err) {
