@@ -9,15 +9,6 @@ from ...schemas.account import AccountCreate, AccountUpdate, AccountResponse
 router = APIRouter(prefix="/admin/accounts", tags=["admin-accounts"])
 
 
-@router.post("/", response_model=AccountResponse)
-async def create_account(
-    account: AccountCreate,
-    db: AsyncSession = Depends(get_db),
-    current_user: str = Depends(get_admin),
-):
-    return await account_service.create_account(db, account)
-
-
 @router.get("/{acc_id}", response_model=AccountResponse)
 async def get_account(acc_id: str, db: AsyncSession = Depends(get_db)):
     account = await account_service.get_account(db, acc_id)

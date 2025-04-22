@@ -9,8 +9,8 @@ from app.services.diagnosis import (
 from app.schemas.diagnosis import DiagnosisCreate, DiagnosisResponse
 from app.utils.cloudinary_helper import upload_photo
 from app.configs.database import get_db
-from ..utils.jwt import get_current_user
-from ..models.account import Account
+from ...utils.jwt import get_current_user, get_active_user
+from ...models.account import Account
 
 router = APIRouter(prefix="/diagnosis", tags=["diagnosis"])
 
@@ -18,7 +18,7 @@ router = APIRouter(prefix="/diagnosis", tags=["diagnosis"])
 @router.post("/upload", response_model=DiagnosisResponse)
 async def upload_diagnosis(
     file: UploadFile = File(...),
-    current_user: Account = Depends(get_current_user),
+    current_user: Account = Depends(get_active_user),
     db: AsyncSession = Depends(get_db),
 ):
     # Upload photo file to external storage
@@ -38,10 +38,18 @@ async def upload_diagnosis(
 
 
 @router.get("/{dia_id}", response_model=DiagnosisResponse)
-async def get_diagnosis_controller(dia_id: int, db: AsyncSession = Depends(get_db)):
+async def get_diagnosis_controller(
+    dia_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: Account = Depends(get_active_user),
+):
     return await get_diagnosis(dia_id, db)
 
 
 @router.delete("/{dia_id}")
-async def delete_diagnosis_controller(dia_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_diagnosis_controller(
+    dia_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: Account = Depends(get_active_user),
+):
     return await delete_diagnosis(dia_id, db)

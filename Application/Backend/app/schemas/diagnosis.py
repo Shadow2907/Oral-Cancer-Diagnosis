@@ -17,3 +17,11 @@ class DiagnosisResponse(DiagnosisBase):
 
     class Config:
         orm_mode = True
+
+
+class DiagnosisUpdate(BaseModel):
+    photo_url: Optional[str] = None
+    diagnosis: Optional[str] = None
+
+    class Config:
+        orm_mode = True

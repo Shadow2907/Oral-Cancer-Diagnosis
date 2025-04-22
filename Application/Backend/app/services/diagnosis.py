@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from fastapi import HTTPException, status
 from app.models.diagnosis import Diagnosis
-from app.schemas.diagnosis import DiagnosisCreate, DiagnosisResponse
+from app.schemas.diagnosis import DiagnosisCreate, DiagnosisResponse, DiagnosisUpdate
 import uuid  # added for auto-generating dia_id
 
 # Load the model
@@ -107,3 +107,30 @@ async def delete_diagnosis(dia_id: int, db: AsyncSession) -> dict:
     await db.delete(diagnosis_obj)
     await db.commit()
     return {"detail": "Diagnosis deleted successfully"}
+
+
+async def get_all_diagnoses(db: AsyncSession, skip: int = 0, limit: int = 10):
+    stmt = select(Diagnosis).offset(skip).limit(limit)
+    result = await db.execute(stmt)
+    diagnoses = result.scalars().all()
+    return [DiagnosisResponse.from_orm(d) for d in diagnoses]
+
+
+async def update_diagnosis(
+    dia_id: int, diagnosis_data: DiagnosisUpdate, db: AsyncSession
+):
+    stmt = select(Diagnosis).where(Diagnosis.dia_id == dia_id)
+    result = await db.execute(stmt)
+    diagnosis = result.scalar_one_or_none()
+
+    if not diagnosis:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Diagnosis not found"
+        )
+
+    for key, value in diagnosis_data.dict(exclude_unset=True).items():
+        setattr(diagnosis, key, value)
+
+    await db.commit()
+    await db.refresh(diagnosis)
+    return DiagnosisResponse.from_orm(diagnosis)
