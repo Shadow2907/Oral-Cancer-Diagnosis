@@ -8,3 +8,5 @@ backend/logs
 logs
 .dockerignore
 .vercel
+nginx
+ssl

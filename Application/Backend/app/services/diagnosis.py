@@ -83,7 +83,7 @@ async def create_diagnosis(
     )
 
 
-async def get_diagnosis(dia_id: int, db: AsyncSession) -> DiagnosisResponse:
+async def get_diagnosis(dia_id: str, db: AsyncSession) -> DiagnosisResponse:
     # Retrieve a diagnosis record by its ID
     stmt = select(Diagnosis).where(Diagnosis.dia_id == dia_id)
     result = await db.execute(stmt)
@@ -95,7 +95,7 @@ async def get_diagnosis(dia_id: int, db: AsyncSession) -> DiagnosisResponse:
     return DiagnosisResponse.from_orm(diagnosis_obj)
 
 
-async def delete_diagnosis(dia_id: int, db: AsyncSession) -> dict:
+async def delete_diagnosis(dia_id: str, db: AsyncSession) -> dict:
     # Delete a diagnosis record by its ID
     stmt = select(Diagnosis).where(Diagnosis.dia_id == dia_id)
     result = await db.execute(stmt)
@@ -116,8 +116,17 @@ async def get_all_diagnoses(db: AsyncSession, skip: int = 0, limit: int = 10):
     return [DiagnosisResponse.from_orm(d) for d in diagnoses]
 
 
+async def get_all_diagnoses_by_user(
+    db: AsyncSession, acc_id: str
+) -> list[DiagnosisResponse]:
+    stmt = select(Diagnosis).where(Diagnosis.acc_id == acc_id)
+    result = await db.execute(stmt)
+    diagnoses = result.scalars().all()
+    return [DiagnosisResponse.from_orm(d) for d in diagnoses]
+
+
 async def update_diagnosis(
-    dia_id: int, diagnosis_data: DiagnosisUpdate, db: AsyncSession
+    dia_id: str, diagnosis_data: DiagnosisUpdate, db: AsyncSession
 ):
     stmt = select(Diagnosis).where(Diagnosis.dia_id == dia_id)
     result = await db.execute(stmt)

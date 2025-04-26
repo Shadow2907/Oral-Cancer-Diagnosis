@@ -16,7 +16,7 @@ class DiagnosisResponse(DiagnosisBase):
     dia_id: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class DiagnosisUpdate(BaseModel):
@@ -24,4 +24,4 @@ class DiagnosisUpdate(BaseModel):
     diagnosis: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
