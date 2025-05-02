@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
 from app.services.diagnosis import (
     create_diagnosis,
-    get_diagnosis,
     delete_diagnosis,
     predict_diagnosis,
+    get_all_diagnoses_by_user,
 )
 from app.schemas.diagnosis import DiagnosisCreate, DiagnosisResponse
 from app.utils.cloudinary_helper import upload_photo
@@ -32,23 +33,25 @@ async def upload_diagnosis(
 
     # Prepare diagnosis data and store in database
     diagnosis_data = DiagnosisCreate(
-        acc_id=current_user.acc_id, photo_url=photo_url, diagnosis=diagnosis_result
+        acc_id=current_user.acc_id,
+        photo_url=photo_url,
+        diagnosis=diagnosis_result,
+        created_at=datetime.now()
     )
     return await create_diagnosis(diagnosis_data, db)
 
 
-@router.get("/{dia_id}", response_model=DiagnosisResponse)
-async def get_diagnosis_controller(
-    dia_id: int,
-    db: AsyncSession = Depends(get_db),
+@router.get("/", response_model=list[DiagnosisResponse])
+async def get_all_user_diagnoses(
     current_user: Account = Depends(get_active_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    return await get_diagnosis(dia_id, db)
+    return await get_all_diagnoses_by_user(db, current_user.acc_id)
 
 
 @router.delete("/{dia_id}")
 async def delete_diagnosis_controller(
-    dia_id: int,
+    dia_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: Account = Depends(get_active_user),
 ):

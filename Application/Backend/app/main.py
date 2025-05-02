@@ -11,14 +11,14 @@ app = FastAPI()
 # Add GZip compression
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# origins = ["http://localhost:5173", "http://52.184.86.56:5173"]
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,  # Allows all origins
-#     allow_credentials=True,
-#     allow_methods=["*"],  # Allows all methods
-#     allow_headers=["*"],  # Allows all headers
-# )
+origins = ["http://localhost:5173", "https://datamining-three.vercel.app/", "https://admin-dm.vercel.app/"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # origins = [
 #    "http://192.168.211.:8000",

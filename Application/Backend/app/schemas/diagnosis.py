@@ -1,11 +1,13 @@
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 
 
 class DiagnosisBase(BaseModel):
     acc_id: str
     photo_url: str
     diagnosis: str = "Non Cancer"
+    created_at: datetime
 
 
 class DiagnosisCreate(DiagnosisBase):
@@ -16,12 +18,13 @@ class DiagnosisResponse(DiagnosisBase):
     dia_id: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class DiagnosisUpdate(BaseModel):
     photo_url: Optional[str] = None
     diagnosis: Optional[str] = None
+    created_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True

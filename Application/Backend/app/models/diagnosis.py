@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 from app.configs.database import Base
@@ -10,3 +10,4 @@ class Diagnosis(Base):
     acc_id = Column(String, ForeignKey("account.acc_id"), index=True)
     photo_url = Column(String)
     diagnosis = Column(String, default="Cancer")
+    created_at = Column(DateTime)
