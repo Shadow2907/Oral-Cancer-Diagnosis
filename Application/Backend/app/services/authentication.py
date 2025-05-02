@@ -16,6 +16,7 @@ from ..utils.redis_lock import DistributedLock
 from ..utils.logger import logger
 from datetime import datetime
 import uuid
+from ..services.account import create_account
 
 
 async def register(account: schemas.AccountCreate, db: AsyncSession):
@@ -51,10 +52,11 @@ async def register(account: schemas.AccountCreate, db: AsyncSession):
 
         # Store account data temporarily in Redis
         temp_account_data = {
-            "acc_id": acc_id,  # auto-generated acc_id
+            "acc_id": acc_id,
             "username": account.username,
             "email": account.email,
             "password": crypto.hash_password(account.password),
+            "role": account.role.value,  # This will be User by default unless Admin is explicitly set
         }
 
         # Store account data for 10 minutes
@@ -112,21 +114,18 @@ async def verify_registration(email: str, otp_code: str, db: AsyncSession):
 
         # Convert string back to dict
         import ast
-
         account_data = ast.literal_eval(temp_data)
 
-        # Create verified account
-        new_account = models.Account(
-            acc_id=account_data["acc_id"],
-            username=account_data["username"],
-            email=account_data["email"],
-            password=account_data["password"],  # Already hashed
+        # Create verified account using account service
+        new_account = await create_account(
+            db, 
+            schemas.AccountCreate(
+                username=account_data["username"],
+                password=account_data["password"],  # Already hashed
+                email=account_data["email"],
+                role=account_data["role"]  # Use the role from stored data
+            )
         )
-
-        # Add and commit to database
-        db.add(new_account)
-        await db.commit()
-        await db.refresh(new_account)
 
         # Delete temporary data and OTP
         await redis_client.delete(f"pending_registration:{email}")
