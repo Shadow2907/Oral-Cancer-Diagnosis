@@ -9,4 +9,4 @@ logs
 .dockerignore
 .vercel
 ssl
-nginx
+default.conf
