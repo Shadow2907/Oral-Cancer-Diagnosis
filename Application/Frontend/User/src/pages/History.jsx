@@ -47,7 +47,7 @@ const History = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setHistoryData(historyData.filter(item => item.dia_id !== dia_id));
+      setHistoryData(historyData.filter((item) => item.dia_id !== dia_id));
     } catch (err) {
       alert("Xóa thất bại!");
       console.error(err);
@@ -75,14 +75,22 @@ const History = () => {
               ? historyData.map((item) => (
                   <Card key={item.dia_id}>
                     <HistoryItem
-                      date={item.date || "Không rõ ngày"}
                       result={item.diagnosis}
                       photoUrl={item.photo_url}
+                      createdAt={item.created_at}
                     />
                     <button
                       onClick={() => handleDelete(item.dia_id)}
                       disabled={deletingId === item.dia_id}
-                      style={{ marginTop: 8, color: "white", background: "red", border: "none", padding: "6px 12px", borderRadius: 4, cursor: "pointer" }}
+                      style={{
+                        marginTop: 8,
+                        color: "white",
+                        background: "red",
+                        border: "none",
+                        padding: "6px 12px",
+                        borderRadius: 4,
+                        cursor: "pointer",
+                      }}
                     >
                       {deletingId === item.dia_id ? "Đang xóa..." : "Xóa"}
                     </button>
