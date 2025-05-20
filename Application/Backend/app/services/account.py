@@ -4,14 +4,15 @@ from ..models.account import Account
 from ..schemas.account import AccountCreate, AccountUpdate
 from typing import List, Optional
 import uuid
-from fastapi import HTTPException
+from fastapi import HTTPException, status
+from ..utils.crypto import hash_password
 
 
 async def create_account(db: AsyncSession, account: AccountCreate) -> Account:
     db_account = Account(
         acc_id=str(uuid.uuid4()),
         username=account.username,
-        password=account.password,  # Note: Should hash password in production
+        password=account.password,  # Hash the password
         email=account.email,
         role=account.role,
     )
@@ -44,7 +45,11 @@ async def update_account(
     if not db_account:
         return None
 
-    for field, value in account.dict(exclude_unset=True).items():
+    update_data = account.dict(exclude_unset=True)
+    if 'password' in update_data:
+        update_data['password'] = hash_password(update_data['password'])
+
+    for field, value in update_data.items():
         setattr(db_account, field, value)
 
     try:
