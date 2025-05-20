@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import axios from "axios";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const { login } = useAuth();
@@ -16,16 +16,16 @@ const Login = () => {
     setError(null);
 
     if (!username || !password) {
-      setError('Vui lòng nhập Tên đăng nhập và Mật khẩu.');
+      setError("Vui lòng nhập Tên đăng nhập và Mật khẩu.");
       return;
     }
 
     setIsLoading(true);
 
     const loginData = new URLSearchParams();
-    loginData.append('grant_type', 'password');
-    loginData.append('username', username);
-    loginData.append('password', password);
+    loginData.append("grant_type", "password");
+    loginData.append("username", username);
+    loginData.append("password", password);
 
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     if (!apiUrl) {
@@ -37,29 +37,26 @@ const Login = () => {
 
     try {
       const response = await axios.post(fullUrl, loginData, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
       if (response.data && response.data.access_token) {
-        localStorage.setItem('authToken', response.data.access_token);
+        login(username, undefined, response.data.access_token);
+        // localStorage.setItem("refreshToken", response.data.refresh_token);
+        navigate("/admin", { replace: true });
+      } else {
+        setError("Đăng nhập thất bại. Không nhận được token.");
       }
-
-      const userRole = response.data.role || 'Admin';
-      login(username, userRole);
-
-      alert('Đăng nhập thành công!');
-      navigate('/admin');
-
     } catch (err) {
-      let errorMessage = 'Đăng nhập thất bại. ';
+      let errorMessage = "Đăng nhập thất bại. ";
       if (err.response) {
         if (err.response.status === 400 || err.response.status === 401) {
-          errorMessage += 'Sai tên đăng nhập hoặc mật khẩu.';
+          errorMessage += "Sai tên đăng nhập hoặc mật khẩu.";
         } else {
           errorMessage += `Lỗi máy chủ (${err.response.status}).`;
         }
       } else {
-        errorMessage += 'Không nhận được phản hồi từ máy chủ.';
+        errorMessage += "Không nhận được phản hồi từ máy chủ.";
       }
       setError(errorMessage);
     } finally {
@@ -74,7 +71,13 @@ const Login = () => {
           <h2 className="auth-title">Đăng Nhập Quản Trị</h2>
         </div>
 
-        {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '15px' }}>{error}</p>}
+        {error && (
+          <p
+            style={{ color: "red", textAlign: "center", marginBottom: "15px" }}
+          >
+            {error}
+          </p>
+        )}
 
         <form id="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
@@ -104,7 +107,7 @@ const Login = () => {
             />
           </div>
           <button type="submit" className="auth-submit" disabled={isLoading}>
-            {isLoading ? 'Đang đăng nhập...' : 'Đăng Nhập'}
+            {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
           </button>
         </form>
       </div>

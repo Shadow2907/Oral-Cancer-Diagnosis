@@ -698,3 +698,47 @@ html {
 
 }
 
+/* upload image */
+.upload-section {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .upload-section .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .upload-section input[type="file"] {
+    display: block;
+    margin: 0 auto;
+    padding: 10px;
+  }
+
+
+  /* changepass */
+  #change-password-screen {
+    padding: 20px;
+  }
+  
+  #change-password-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .auth-form-container {
+    background-color: var(--card-background);
+    border-radius: 15px;
+    padding: 30px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+  }
+  
+  .change-password-option {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 10px;
+  }

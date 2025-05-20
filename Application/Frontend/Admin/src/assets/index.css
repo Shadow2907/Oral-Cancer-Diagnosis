@@ -133,6 +133,7 @@
   /* --- Table Styles --- */
   .table-container {
     overflow-x: auto;
+    text-align: center;
   }
   
   table {
@@ -144,7 +145,6 @@
   th,
   td {
     padding: 12px 15px;
-    text-align: left;
     border-bottom: 1px solid #e0e0e0;
   }
   
@@ -159,10 +159,10 @@
   }
   
   /* --- Action Buttons --- */
-  .action-buttons {
+  /* .action-buttons {
     display: flex;
     gap: 10px;
-  }
+  } */
   
   .action-button {
     padding: 8px 12px;
@@ -178,6 +178,8 @@
   .edit-button {
     background-color: var(--primary-color);
     color: white;
+    margin-bottom: 5px;
+    width: 100%;
   }
   .edit-button:hover {
     background-color: #2980b9;
@@ -186,6 +188,8 @@
   .delete-button {
     background-color: #e74c3c;
     color: white;
+    margin-bottom: 5px;
+    width: 100%;
   }
   .delete-button:hover {
     background-color: #c0392b;
@@ -427,5 +431,26 @@
     .action-button {
       width: 100%;
       justify-content: center;
+
     }
+    
   }
+
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: #fff;
+  padding: 24px 32px;
+  border-radius: 8px;
+  min-width: 300px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
