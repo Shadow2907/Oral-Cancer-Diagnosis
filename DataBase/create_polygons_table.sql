@@ -1,6 +1,6 @@
-CREATE EXTERNAL TABLE metadata_jsonfile.polygons (
+CREATE EXTERNAL TABLE metadata_jsonfile.annotations (
     image_id STRING,
-    polygon_id INT,
+    annotation_id INT,
     polygon_type STRING,
     annotation_json STRING
 )
