@@ -51,9 +51,31 @@ npm install
 4. Cấu hình môi trường:
 - Tạo file `.env` trong thư mục Backend và cấu hình các biến môi trường cần thiết:
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/db_name
-JWT_SECRET_KEY=your_jwt_secret
-CLOUDINARY_URL=your_cloudinary_url
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_FROM=
+MAIL_PORT=
+MAIL_SERVER=
+MAIL_STARTTLS=
+MAIL_SSL_TLS=
+
+DB_URL=
+
+SECRET_KEY=
+
+pg_user=
+pg_password=
+pg_db=
+
+REDIS_HOST=
+REDIS_PORT=
+REDIS_DB=
+REDIS_PASSWORD=
+REDIS_URL=
+
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 ```
 
 ## Sử dụng
