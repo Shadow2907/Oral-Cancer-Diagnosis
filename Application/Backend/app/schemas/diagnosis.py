@@ -6,8 +6,9 @@ from datetime import datetime
 class DiagnosisBase(BaseModel):
     acc_id: str
     photo_url: str
-    diagnosis: str = "Non Cancer"
-    created_at: datetime
+    diagnosis: Optional[str] = "Non Cancer"
+    segmentation_url: Optional[str] = None
+    created_at: Optional[datetime] = None
 
 
 class DiagnosisCreate(DiagnosisBase):
@@ -24,6 +25,7 @@ class DiagnosisResponse(DiagnosisBase):
 class DiagnosisUpdate(BaseModel):
     photo_url: Optional[str] = None
     diagnosis: Optional[str] = None
+    segmentation_url: Optional[str] = None
     created_at: Optional[datetime] = None
 
     class Config:

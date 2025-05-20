@@ -29,13 +29,14 @@ async def upload_diagnosis(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     # Predict diagnosis based on the photo URL (synchronous)
-    diagnosis_result = predict_diagnosis(photo_url)
+    prediction_result = predict_diagnosis(photo_url)
 
     # Prepare diagnosis data and store in database
     diagnosis_data = DiagnosisCreate(
         acc_id=current_user.acc_id,
         photo_url=photo_url,
-        diagnosis=diagnosis_result,
+        diagnosis=prediction_result["diagnosis"],
+        segmentation_url=prediction_result["segmentation_url"],
         created_at=datetime.now()
     )
     return await create_diagnosis(diagnosis_data, db)

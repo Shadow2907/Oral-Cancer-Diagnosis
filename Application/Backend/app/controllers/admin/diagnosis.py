@@ -9,14 +9,6 @@ from ...models.account import Account
 
 router = APIRouter(prefix="/admin/diagnosis", tags=["admin-diagnosis"])
 
-@router.post("/create", response_model=DiagnosisResponse)
-async def create_diagnosis_admin(
-    diagnosis_data: DiagnosisCreate,
-    current_admin: Account = Depends(get_admin_user),
-    db: AsyncSession = Depends(get_db),
-):
-    diagnosis_data.created_at = datetime.now()
-    return await create_diagnosis(diagnosis_data, db)
 
 @router.get("/user/{user_id}", response_model=list[DiagnosisResponse])
 async def get_user_diagnoses(

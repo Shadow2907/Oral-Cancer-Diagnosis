@@ -192,7 +192,7 @@ async def get_admin(
     db: AsyncSession = Depends(get_db),
     current_account: models.Account = Depends(get_active_user),
 ):
-    if current_account.role != "admin":
+    if current_account.role != models.RoleEnum.Admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required"
         )

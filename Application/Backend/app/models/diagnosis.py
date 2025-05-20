@@ -11,3 +11,4 @@ class Diagnosis(Base):
     photo_url = Column(String)
     diagnosis = Column(String, default="Cancer")
     created_at = Column(DateTime)
+    segmentation_url = Column(String)

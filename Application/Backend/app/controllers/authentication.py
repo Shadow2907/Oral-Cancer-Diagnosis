@@ -64,7 +64,6 @@ async def forgot_password(
 async def reset_password(
     request: account_schema.ResetPassword = Query(...),
     db: AsyncSession = Depends(get_db),
-    current_user: Account = Depends(get_active_user),
 ):
     return await authentication_service.reset_passwords(request, db)
 

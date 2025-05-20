@@ -26,14 +26,14 @@ async def list_all_diagnoses(
 
 @router.get("/{dia_id}", response_model=DiagnosisResponse)
 async def get_diagnosis_by_id(
-    dia_id: int, db: AsyncSession = Depends(get_db), admin: Account = Depends(get_admin)
+    dia_id: str, db: AsyncSession = Depends(get_db), admin: Account = Depends(get_admin)
 ):
     return await get_diagnosis(dia_id, db)
 
 
 @router.put("/{dia_id}", response_model=DiagnosisResponse)
 async def update_diagnosis_by_id(
-    dia_id: int,
+    dia_id: str,
     diagnosis_data: DiagnosisUpdate,
     db: AsyncSession = Depends(get_db),
     admin: Account = Depends(get_admin),
@@ -43,6 +43,6 @@ async def update_diagnosis_by_id(
 
 @router.delete("/{dia_id}")
 async def delete_diagnosis_by_id(
-    dia_id: int, db: AsyncSession = Depends(get_db), admin: Account = Depends(get_admin)
+    dia_id: str, db: AsyncSession = Depends(get_db), admin: Account = Depends(get_admin)
 ):
     return await delete_diagnosis(dia_id, db)
