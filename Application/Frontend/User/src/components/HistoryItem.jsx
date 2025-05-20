@@ -1,7 +1,7 @@
 import React from "react";
 import Card from "./Card";
 
-const HistoryItem = ({ result, photoUrl, createdAt }) => {
+const HistoryItem = ({ result, segmentation_url, createdAt }) => {
   const resultStyle = result?.toLowerCase().includes("nghi ngờ")
     ? { color: "red" }
     : {};
@@ -15,10 +15,10 @@ const HistoryItem = ({ result, photoUrl, createdAt }) => {
 
   return (
     <Card className="history-item">
-      {photoUrl && (
+      {segmentation_url && (
         <div style={{ marginBottom: 8 }}>
           <img
-            src={photoUrl}
+            src={segmentation_url}
             alt="Ảnh chẩn đoán"
             style={{ maxWidth: 120, borderRadius: 6 }}
           />

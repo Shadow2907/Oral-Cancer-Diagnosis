@@ -1,17 +1,44 @@
-import React from 'react';
-import Card from '../../components/Card';
+import React, { useEffect, useState } from "react";
+import Card from "../../components/Card";
+
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const SystemMonitoring = () => {
-  const logsData = [
-    { timestamp: '2025-03-05 10:00:00', message: 'Máy chủ khởi động thành công.' },
-    { timestamp: '2025-03-05 10:05:00', message: 'Người dùng đăng nhập: nguyenvana@example.com' },
-    { timestamp: '2025-03-05 10:10:00', message: 'Bản ghi chẩn đoán đã được cập nhật.' },
-  ];
+  const [logsData, setLogsData] = useState([]);
 
-  const handleCheckServerStatus = () => {
-    alert('Đang kiểm tra trạng thái máy chủ...');
-    // Add API call to check server status
-  };
+  useEffect(() => {
+    const fetchDiagnoses = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const res = await fetch(
+          `${apiUrl}/api/api/admin/diagnosis/?skip=0&limit=1000`,
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          }
+        );
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          const logs = data.slice(0, 10).map((diag) => ({
+            timestamp: getVNTime(diag.created_at),
+            message: "Bản ghi chẩn đoán đã được cập nhật.",
+          }));
+          setLogsData(logs);
+        }
+      } catch {
+        setLogsData([]);
+      }
+    };
+    fetchDiagnoses();
+  }, []);
+
+  
+  const getVNTime = (isoString) => {
+  if (!isoString) return "Không rõ";
+  const date = new Date(isoString);
+  date.setHours(date.getHours() + 7);
+  return date.toLocaleString("vi-VN");
+};
 
   return (
     <div id="system-screen" className="screen">
@@ -19,19 +46,21 @@ const SystemMonitoring = () => {
       <Card>
         <h3>Trạng Thái Máy Chủ</h3>
         <p>
-          Trạng Thái Hiện Tại: <span className="status-indicator status-up">Đang Chạy</span>
+          Trạng Thái Hiện Tại:{" "}
+          <span className="status-indicator status-up">Đang Chạy</span>
         </p>
-        <button className="submit-button" onClick={handleCheckServerStatus}>
-          Kiểm Tra Trạng Thái Máy Chủ
-        </button>
       </Card>
       <Card>
         <h3>Nhật Ký Hệ Thống</h3>
-        {logsData.map((log, index) => (
-          <div key={index} className="log-entry">
-            {log.timestamp} - {log.message}
-          </div>
-        ))}
+        {logsData.length === 0 ? (
+          <p>Không có nhật ký.</p>
+        ) : (
+          logsData.map((log, index) => (
+            <div key={index} className="log-entry">
+              {log.timestamp} - {log.message}
+            </div>
+          ))
+        )}
       </Card>
     </div>
   );

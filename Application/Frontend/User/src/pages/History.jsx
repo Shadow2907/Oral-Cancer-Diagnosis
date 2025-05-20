@@ -10,10 +10,12 @@ const History = () => {
   const [historyData, setHistoryData] = useState([]);
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null); 
 
   useEffect(() => {
     const fetchHistory = async () => {
       if (!isLoggedIn) return;
+      
 
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
       const token = localStorage.getItem("authToken");
@@ -37,7 +39,6 @@ const History = () => {
   }, [isLoggedIn]);
 
   const handleDelete = async (dia_id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa kết quả này?")) return;
     setDeletingId(dia_id);
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const token = localStorage.getItem("authToken");
@@ -53,6 +54,7 @@ const History = () => {
       console.error(err);
     } finally {
       setDeletingId(null);
+      setConfirmDeleteId(null); // Đóng xác nhận sau khi xóa
     }
   };
 
@@ -76,24 +78,60 @@ const History = () => {
                   <Card key={item.dia_id}>
                     <HistoryItem
                       result={item.diagnosis}
-                      photoUrl={item.photo_url}
+                      segmentation_url={item.segmentation_url}
                       createdAt={item.created_at}
                     />
-                    <button
-                      onClick={() => handleDelete(item.dia_id)}
-                      disabled={deletingId === item.dia_id}
-                      style={{
-                        marginTop: 8,
-                        color: "white",
-                        background: "red",
-                        border: "none",
-                        padding: "6px 12px",
-                        borderRadius: 4,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {deletingId === item.dia_id ? "Đang xóa..." : "Xóa"}
-                    </button>
+                    {confirmDeleteId === item.dia_id ? (
+                      <div style={{ marginTop: 8 }}>
+                        <p>Bạn có chắc muốn xóa kết quả này?</p>
+                        <button
+                          onClick={() => handleDelete(item.dia_id)}
+                          disabled={deletingId === item.dia_id}
+                          style={{
+                            color: "white",
+                            background: "red",
+                            border: "none",
+                            padding: "6px 12px",
+                            borderRadius: 4,
+                            cursor: "pointer",
+                            marginRight: 8,
+                          }}
+                        >
+                          {deletingId === item.dia_id
+                            ? "Đang xóa..."
+                            : "Xác nhận"}
+                        </button>
+                        <button
+                          onClick={() => setConfirmDeleteId(null)}
+                          style={{
+                            color: "black",
+                            background: "#eee",
+                            border: "none",
+                            padding: "6px 12px",
+                            borderRadius: 4,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Hủy
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setConfirmDeleteId(item.dia_id)}
+                        disabled={deletingId === item.dia_id}
+                        style={{
+                          marginTop: 8,
+                          color: "white",
+                          background: "red",
+                          border: "none",
+                          padding: "6px 12px",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Xóa
+                      </button>
+                    )}
                   </Card>
                 ))
               : !error && (

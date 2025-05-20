@@ -49,6 +49,10 @@ const ResetPassword = () => {
       setError("Vui lòng nhập đầy đủ thông tin.");
       return;
     }
+    if (newPassword.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự.");
+      return;
+    }
     if (newPassword !== confirmPassword) {
       setError("Mật khẩu xác nhận không khớp.");
       return;
@@ -177,7 +181,7 @@ const ResetPassword = () => {
                 className="auth-submit"
                 disabled={isLoading}
               >
-                {isLoading ? "Đang đổi mật khẩu..." : "Đổi mật khẩu"}
+                {isLoading ? "Đang đặt lại mật khẩu..." : "Đặt lại mật khẩu"}
               </button>
             </>
           )}

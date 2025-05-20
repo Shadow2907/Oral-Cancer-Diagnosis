@@ -1,4 +1,4 @@
-// src/pages/OtpVerification.jsx
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -25,7 +25,7 @@ const OtpVerification = () => {
         e.preventDefault();
         setError(null);
 
-        if (!otp || otp.length < 4) { // Basic OTP validation (adjust length if needed)
+        if (!otp || otp.length < 4) { 
             setError('Vui lòng nhập mã OTP hợp lệ.');
             return;
         }
@@ -97,8 +97,7 @@ const OtpVerification = () => {
             <div className="auth-form-container">
                 <div className="auth-header">
                     <h2 className="auth-title">Xác Thực OTP</h2>
-                    {/* Optional: Add close button or link back */}
-                    {/* <Link to="/signup" className="auth-close"><i className="bi bi-arrow-left"></i></Link> */}
+                    
                 </div>
 
                 <p style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -112,7 +111,7 @@ const OtpVerification = () => {
                     <div className="form-group">
                         <label htmlFor="otp_code">Mã OTP</label>
                         <input
-                            type="text" // Use text, or number with pattern for better mobile input
+                            type="text" 
                             id="otp_code"
                             name="otp_code"
                             placeholder="Nhập mã OTP"

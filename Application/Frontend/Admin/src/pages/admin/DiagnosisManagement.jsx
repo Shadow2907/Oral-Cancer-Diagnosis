@@ -6,6 +6,12 @@ const apiUrl = import.meta.env.VITE_API_BASE_URL;
 const DiagnosisManagement = () => {
   const [diagnosesData, setDiagnosesData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userMap, setUserMap] = useState({}); 
+
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteDiagnosisId, setDeleteDiagnosisId] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(""); 
 
   useEffect(() => {
     const fetchDiagnoses = async () => {
@@ -19,7 +25,26 @@ const DiagnosisManagement = () => {
         );
         const data = await res.json();
         if (Array.isArray(data)) {
+          data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
           setDiagnosesData(data);
+
+          
+          const accIds = [...new Set(data.map((d) => d.acc_id))];
+          const tokenHeader = token ? { Authorization: `Bearer ${token}` } : {};
+          const userFetches = accIds.map((acc_id) =>
+            fetch(`${apiUrl}/api/api/admin/accounts/${acc_id}`, {
+              headers: tokenHeader,
+            })
+              .then((res) => (res.ok ? res.json() : null))
+              .then((user) => ({ acc_id, username: user?.username || acc_id }))
+              .catch(() => ({ acc_id, username: acc_id }))
+          );
+          const users = await Promise.all(userFetches);
+          const map = {};
+          users.forEach(({ acc_id, username }) => {
+            map[acc_id] = username;
+          });
+          setUserMap(map);
         } else {
           setDiagnosesData([]);
         }
@@ -32,67 +57,45 @@ const DiagnosisManagement = () => {
     fetchDiagnoses();
   }, []);
 
-  const handleEditDiagnosis = async (id) => {
+
+  const handleDeleteDiagnosis = (id) => {
+    setDeleteDiagnosisId(id);
+    setShowDeleteConfirm(true);
+  };
+
+
+  const handleConfirmDeleteDiagnosis = async () => {
     const token = localStorage.getItem("authToken");
     try {
-      // Lấy dữ liệu hiện tại
-      const res = await fetch(`${apiUrl}/api/api/admin/diagnosis/${id}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (!res.ok) {
-        alert("Không lấy được dữ liệu chẩn đoán!");
-        return;
-      }
-      const data = await res.json();
-      const newDiagnosis = prompt(
-        "Nhập kết quả chẩn đoán mới:",
-        data.diagnosis
+      const res = await fetch(
+        `${apiUrl}/api/api/admin/diagnosis/${deleteDiagnosisId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      if (!newDiagnosis) return;
-
-      // Gửi cập nhật
-      const updateRes = await fetch(`${apiUrl}/api/api/admin/diagnosis/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          acc_id: data.acc_id,
-          created_at: data.created_at,
-          diagnosis: newDiagnosis,
-        }),
-      });
-      if (updateRes.ok) {
-        alert("Cập nhật thành công!");
-        // Cập nhật lại danh sách
-        window.location.reload();
+      if (res.ok) {
+        setDiagnosesData((prev) =>
+          prev.filter((d) => d.dia_id !== deleteDiagnosisId)
+        );
+        setSuccessMessage("Xóa bản ghi chẩn đoán thành công!");
+        setTimeout(() => setSuccessMessage(""), 4000); // Ẩn sau 4 giây
       } else {
-        alert("Cập nhật thất bại!");
+        alert("Xóa thất bại!");
       }
     } catch {
       alert("Có lỗi xảy ra!");
+    } finally {
+      setShowDeleteConfirm(false);
+      setDeleteDiagnosisId(null);
     }
   };
 
-  const handleDeleteDiagnosis = async (id) => {
-    if (window.confirm(`Bạn có chắc muốn xóa bản ghi chẩn đoán ${id}?`)) {
-      const token = localStorage.getItem("authToken");
-      try {
-        const res = await fetch(`${apiUrl}/api/api/admin/diagnosis/${id}`, {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.ok) {
-          alert("Đã xóa bản ghi chẩn đoán!");
-          window.location.reload();
-        } else {
-          alert("Xóa thất bại!");
-        }
-      } catch {
-        alert("Có lỗi xảy ra!");
-      }
-    }
+  const getVNTime = (isoString) => {
+    if (!isoString) return "Không rõ";
+    const date = new Date(isoString);
+    date.setHours(date.getHours() + 7);
+    return date.toLocaleString("vi-VN");
   };
 
   return (
@@ -100,6 +103,12 @@ const DiagnosisManagement = () => {
       <h2 className="screen-title">Quản Lý Chẩn Đoán</h2>
       <Card>
         <h3>Bản Ghi Chẩn Đoán</h3>
+        {/* Hiển thị thông báo thành công */}
+        {successMessage && (
+          <div style={{ color: "green", marginBottom: 12, fontWeight: 500 }}>
+            {successMessage}
+          </div>
+        )}
         <div className="table-container">
           {loading ? (
             <p>Đang tải...</p>
@@ -107,7 +116,6 @@ const DiagnosisManagement = () => {
             <table>
               <thead>
                 <tr>
-                  
                   <th>Người Dùng</th>
                   <th>Ngày</th>
                   <th>Kết Quả</th>
@@ -117,19 +125,14 @@ const DiagnosisManagement = () => {
               <tbody>
                 {diagnosesData.map((diag) => (
                   <tr key={diag.dia_id}>
-                    
-                    <td>{diag.acc_id}</td>
-                    <td>
-                      {diag.created_at
-                        ? new Date(diag.created_at).toLocaleString()
-                        : ""}
-                    </td>
+                    <td>{userMap[diag.acc_id] || diag.acc_id}</td>
+                    <td>{getVNTime(diag.created_at)}</td>
                     <td>
                       {diag.diagnosis}
-                      {diag.photo_url && (
+                      {diag.segmentation_url && (
                         <div>
                           <img
-                            src={diag.photo_url}
+                            src={diag.segmentation_url}
                             alt="Ảnh chẩn đoán"
                             style={{ maxWidth: 120, marginTop: 4 }}
                           />
@@ -137,18 +140,62 @@ const DiagnosisManagement = () => {
                       )}
                     </td>
                     <td className="action-buttons">
-                      <button
-                        className="action-button edit-button"
-                        onClick={() => handleEditDiagnosis(diag.dia_id)}
-                      >
-                        <i className="bi bi-pencil"></i> Sửa
-                      </button>
-                      <button
-                        className="action-button delete-button"
-                        onClick={() => handleDeleteDiagnosis(diag.dia_id)}
-                      >
-                        <i className="bi bi-trash"></i> Xóa
-                      </button>
+                      {showDeleteConfirm &&
+                      deleteDiagnosisId === diag.dia_id ? (
+                        <div style={{ marginTop: 8 }}>
+                          <p>Xác nhận xóa?</p>
+                          <button
+                            className="action-button delete-button"
+                            onClick={handleConfirmDeleteDiagnosis}
+                            style={{
+                              color: "white",
+                              background: "red",
+                              border: "none",
+                              padding: "6px 12px",
+                              borderRadius: 4,
+                              cursor: "pointer",
+                              marginRight: 8,
+                              width: "100px",
+                            }}
+                          >
+                            Xác nhận
+                          </button>
+                          <button
+                            className="action-button"
+                            onClick={() => {
+                              setShowDeleteConfirm(false);
+                              setDeleteDiagnosisId(null);
+                            }}
+                            style={{
+                              color: "black",
+                              background: "#eee",
+                              border: "none",
+                              padding: "6px 12px",
+                              borderRadius: 4,
+                              cursor: "pointer",
+                              width: "100px",
+                            }}
+                          >
+                            Hủy
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          className="action-button delete-button"
+                          onClick={() => handleDeleteDiagnosis(diag.dia_id)}
+                          style={{
+                            marginTop: 8,
+                            color: "white",
+                            background: "red",
+                            border: "none",
+                            padding: "6px 12px",
+                            borderRadius: 4,
+                            cursor: "pointer",
+                          }}
+                        >
+                          <i className="bi bi-trash"></i> Xóa
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

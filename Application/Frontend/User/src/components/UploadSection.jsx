@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
 
 const UploadSection = ({ onUpload, isLoading }) => {
@@ -7,26 +7,55 @@ const UploadSection = ({ onUpload, isLoading }) => {
   const [showWebcam, setShowWebcam] = useState(false);
   const webcamRef = useRef(null);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
-    if (file) {
-      setPreviewUrl(URL.createObjectURL(file));
-    } else {
-      setPreviewUrl(null);
-    }
+  // Hàm crop ảnh về 256x256
+  const cropImageTo256 = (file) => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 256;
+        canvas.height = 256;
+        const ctx = canvas.getContext("2d");
+
+        // Tính toán crop vùng giữa ảnh
+        const minSize = Math.min(img.width, img.height);
+        const sx = (img.width - minSize) / 2;
+        const sy = (img.height - minSize) / 2;
+
+        ctx.drawImage(
+          img,
+          sx, sy, minSize, minSize, 
+          0, 0, 256, 256 
+        );
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(new File([blob], file.name, { type: file.type }));
+          } else {
+            reject(new Error("Không thể crop ảnh"));
+          }
+        }, file.type);
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
   };
 
-  const capture = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    fetch(imageSrc)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const file = new File([blob], "webcam.jpg", { type: "image/jpeg" });
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setPreviewUrl(URL.createObjectURL(file));
+
+    const img = new window.Image();
+    img.onload = async () => {
+      if (img.width !== 256 || img.height !== 256) {
+        const cropped = await cropImageTo256(file);
+        setSelectedFile(cropped);
+        setPreviewUrl(URL.createObjectURL(cropped));
+      } else {
         setSelectedFile(file);
-        setPreviewUrl(imageSrc);
-        setShowWebcam(false);
-      });
+      }
+    };
+    img.src = URL.createObjectURL(file);
   };
 
   const handleSubmit = (e) => {
@@ -34,6 +63,29 @@ const UploadSection = ({ onUpload, isLoading }) => {
     if (selectedFile) {
       onUpload(selectedFile);
     }
+  };
+
+
+  const capture = async () => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    const res = await fetch(imageSrc);
+    const blob = await res.blob();
+    const file = new File([blob], "webcam.jpg", { type: "image/jpeg" });
+
+
+    const img = new window.Image();
+    img.onload = async () => {
+      if (img.width !== 256 || img.height !== 256) {
+        const cropped = await cropImageTo256(file);
+        setSelectedFile(cropped);
+        setPreviewUrl(URL.createObjectURL(cropped));
+      } else {
+        setSelectedFile(file);
+        setPreviewUrl(imageSrc);
+      }
+    };
+    img.src = URL.createObjectURL(file);
+    setShowWebcam(false);
   };
 
   return (
@@ -88,7 +140,7 @@ const UploadSection = ({ onUpload, isLoading }) => {
             <img
               src={previewUrl}
               alt="Demo"
-              style={{ maxWidth: 200, maxHeight: 200, borderRadius: 8 }}
+              style={{ width: 256, height: 256, objectFit: "cover", borderRadius: 8 }}
             />
           </div>
         )}

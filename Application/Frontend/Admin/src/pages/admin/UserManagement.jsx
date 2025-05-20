@@ -11,8 +11,15 @@ const UserManagement = () => {
     password: "",
     status: "",
   });
+  const [showEditConfirm, setShowEditConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteUserId, setDeleteUserId] = useState(null);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetUserId, setResetUserId] = useState(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [successMessage, setSuccessMessage] = useState(""); 
 
-  // Đưa fetchAccounts ra ngoài useEffect
   const fetchAccounts = async () => {
     try {
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -47,7 +54,6 @@ const UserManagement = () => {
     fetchAccounts();
   }, []);
 
-  // Mở form sửa
   const handleEditUser = (id) => {
     const user = usersData.find((u) => u.acc_id === id);
     if (user) {
@@ -55,25 +61,23 @@ const UserManagement = () => {
       setEditForm({
         username: user.username,
         email: user.email,
-        password: "", // Để trống, chỉ nhập khi muốn đổi
+        password: "",
         status: user.status,
       });
     }
   };
 
-  // Gửi request cập nhật
   const handleEditSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
     const token = localStorage.getItem("authToken");
     try {
-      // Lấy user hiện tại để lấy password cũ nếu không đổi
       const user = usersData.find((u) => u.acc_id === editingUser);
       const body = {
         username: editForm.username,
         email: editForm.email,
         status: editForm.status,
-        password: editForm.password ? editForm.password : user.password, // luôn gửi password
+        password: editForm.password ? editForm.password : user.password,
       };
       const res = await fetch(
         `${apiUrl}/api/api/admin/accounts/${editingUser}`,
@@ -86,93 +90,119 @@ const UserManagement = () => {
           body: JSON.stringify(body),
         }
       );
+      // Sau khi sửa hoặc reset mật khẩu thành công, reset tất cả các state liên quan
       if (res.ok) {
-        alert("Cập nhật thành công!");
         setEditingUser(null);
+        setShowEditConfirm(false);
+        setResetUserId(null);
+        setShowResetModal(false);
+        setDeleteUserId(null);
+        setShowDeleteConfirm(false);
+        setNewPassword("");
+        setResetError("");
         await fetchAccounts();
-      } else {
-        alert("Cập nhật thất bại!");
+        setSuccessMessage("Thao tác thành công!");
+        setTimeout(() => setSuccessMessage(""), 4000);
       }
-    } catch {
-      alert("Có lỗi xảy ra!");
-    }
+    } catch {}
   };
 
-  // Đóng form sửa
   const handleEditCancel = () => {
     setEditingUser(null);
   };
 
-  // Xử lý thay đổi input form sửa
   const handleEditChange = (e) => {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
-  const handleDeleteUser = async (id) => {
-    if (window.confirm(`Bạn có chắc muốn xóa người dùng ${id}?`)) {
-      const apiUrl = import.meta.env.VITE_API_BASE_URL;
-      const token = localStorage.getItem("authToken");
-      try {
-        const res = await fetch(`${apiUrl}/api/api/admin/accounts/${id}`, {
+  const handleDeleteUser = (id) => {
+    setDeleteUserId(id);
+    setShowDeleteConfirm(true);
+    setEditingUser(null);
+    setShowEditConfirm(false);
+    setResetUserId(null);
+    setShowResetModal(false);
+  };
+
+  const handleConfirmDeleteUser = async () => {
+    if (!deleteUserId) return;
+    const apiUrl = import.meta.env.VITE_API_BASE_URL;
+    const token = localStorage.getItem("authToken");
+    try {
+      const res = await fetch(
+        `${apiUrl}/api/api/admin/accounts/${deleteUserId}`,
+        {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
-        if (res.ok) {
-          alert("Xóa thành công!");
-          await fetchAccounts(); // Cập nhật lại danh sách
-        } else {
-          alert("Xóa thất bại!");
         }
-      } catch {
-        alert("Có lỗi xảy ra!");
+      );
+      if (res.ok) {
+        await fetchAccounts();
+        setSuccessMessage(`Xóa tài khoản ${deleteUserId} thành công!`);
+        setTimeout(() => setSuccessMessage(""), 4000);
       }
-    }
+    } catch {}
+    setShowDeleteConfirm(false);
+    setDeleteUserId(null);
   };
 
-  const handleResetPassword = async (id) => {
-    if (
-      window.confirm(`Bạn có chắc muốn đặt lại mật khẩu cho người dùng ${id}?`)
-    ) {
-      const newPassword = prompt("Nhập mật khẩu mới cho người dùng:");
-      if (!newPassword) {
-        alert("Bạn chưa nhập mật khẩu mới!");
+  const handleResetPassword = (id) => {
+    setResetUserId(id);
+    setNewPassword("");
+    setResetError("");
+    setShowResetModal(true);
+  };
+
+  const handleConfirmResetPassword = async () => {
+    if (!newPassword) {
+      setResetError("Bạn chưa nhập mật khẩu mới!");
+      return;
+    }
+    const apiUrl = import.meta.env.VITE_API_BASE_URL;
+    const token = localStorage.getItem("authToken");
+    try {
+      const user = usersData.find((u) => u.acc_id === resetUserId);
+      if (!user) {
+        setResetError("Không tìm thấy người dùng!");
         return;
       }
-      const apiUrl = import.meta.env.VITE_API_BASE_URL;
-      const token = localStorage.getItem("authToken");
-      try {
-        // Lấy thông tin user hiện tại để giữ nguyên các trường khác
-        const user = usersData.find((u) => u.acc_id === id);
-        if (!user) {
-          alert("Không tìm thấy người dùng!");
-          return;
-        }
-        const body = {
-          username: user.username,
-          email: user.email,
-          status: user.status,
-          password: newPassword, // Mật khẩu do admin nhập
-        };
-        const res = await fetch(`${apiUrl}/api/api/admin/accounts/${id}`, {
+      const body = {
+        username: user.username,
+        email: user.email,
+        status: user.status,
+        password: newPassword,
+      };
+      const res = await fetch(
+        `${apiUrl}/api/api/admin/accounts/${resetUserId}`,
+        {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(body),
-        });
-        if (res.ok) {
-          alert(
-            `Đã đặt lại mật khẩu cho người dùng ${id} (mật khẩu mới: ${newPassword})`
-          );
-        } else {
-          alert("Đặt lại mật khẩu thất bại!");
         }
-      } catch {
-        alert("Có lỗi xảy ra!");
+      );
+      // Sau khi sửa hoặc reset mật khẩu thành công, reset tất cả các state liên quan
+      if (res.ok) {
+        setEditingUser(null);
+        setShowEditConfirm(false);
+        setResetUserId(null);
+        setShowResetModal(false);
+        setDeleteUserId(null);
+        setShowDeleteConfirm(false);
+        setNewPassword("");
+        setResetError("");
+        await fetchAccounts();
+        setSuccessMessage("Thao tác thành công!");
+        setTimeout(() => setSuccessMessage(""), 4000);
+      } else {
+        setResetError("Đặt lại mật khẩu thất bại!");
       }
+    } catch {
+      setResetError("Có lỗi xảy ra!");
     }
   };
 
@@ -181,6 +211,12 @@ const UserManagement = () => {
       <h2 className="screen-title">Quản Lý Người Dùng</h2>
       <Card>
         <h3>Danh Sách Người Dùng</h3>
+        {/* Hiển thị thông báo thành công */}
+        {successMessage && (
+          <div style={{ color: "green", marginBottom: 12, fontWeight: 500 }}>
+            {successMessage}
+          </div>
+        )}
         <div className="table-container">
           {loading ? (
             <p>Đang tải...</p>
@@ -209,25 +245,14 @@ const UserManagement = () => {
                         />
                       </td>
                       <td>
-                        <input
-                          name="email"
-                          value={editForm.email}
-                          onChange={handleEditChange}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          name="status"
-                          value={editForm.status}
-                          onChange={handleEditChange}
-                        />
+                        <input name="email" onChange={handleEditChange} />
                       </td>
                       <td>{user.role}</td>
                       <td>
                         <div className="action-buttons">
                           <button
                             className="action-button edit-button"
-                            onClick={handleEditSubmit}
+                            onClick={handleEditSubmit} 
                           >
                             Lưu
                           </button>
@@ -275,6 +300,105 @@ const UserManagement = () => {
           )}
         </div>
       </Card>
+      {showEditConfirm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Xác nhận lưu chỉnh sửa</h3>
+            <p>
+              Bạn có chắc muốn lưu thay đổi cho người dùng{" "}
+              <b>{editForm.username}</b>?
+            </p>
+            <div style={{ marginTop: 12 }}>
+              <button
+                className="action-button edit-button"
+                onClick={async () => {
+                  setShowEditConfirm(false);
+                  await handleEditSubmit(new Event("submit"));
+                }}
+                style={{ width: "100px" }}
+              >
+                Xác nhận
+              </button>
+              <button
+                className="action-button delete-button"
+                onClick={() => setShowEditConfirm(false)}
+                style={{ width: "100px" }}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showDeleteConfirm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Xác nhận xóa người dùng</h3>
+            <p>
+              Bạn có chắc muốn xóa người dùng <b>{deleteUserId}</b> không?
+            </p>
+            <div style={{ marginTop: 12, width: "100px" }}>
+              <button
+                className="action-button delete-button"
+                onClick={handleConfirmDeleteUser}
+              >
+                Xác nhận
+              </button>
+              <button
+                className="action-button"
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeleteUserId(null);
+                }}
+                style={{ width: "100px" }}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showResetModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Đặt lại mật khẩu</h3>
+            <p>
+              Nhập mật khẩu mới cho người dùng <b>{resetUserId}</b>:
+            </p>
+            <input
+              type="text"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Mật khẩu mới"
+              style={{ width: "100%", margin: "8px 0", padding: "6px" }}
+            />
+            {resetError && (
+              <div style={{ color: "red", marginBottom: 8 }}>{resetError}</div>
+            )}
+            <div style={{ marginTop: 12 }}>
+              <button
+                className="action-button edit-button"
+                onClick={handleConfirmResetPassword}
+                style={{ width: "100px" }}
+              >
+                Xác nhận
+              </button>
+              <button
+                className="action-button delete-button"
+                onClick={() => {
+                  setShowResetModal(false);
+                  setResetUserId(null);
+                  setNewPassword("");
+                  setResetError("");
+                }}
+                style={{ width: "100px" }}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

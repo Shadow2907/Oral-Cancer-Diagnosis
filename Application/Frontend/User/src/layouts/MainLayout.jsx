@@ -1,4 +1,4 @@
-// src/layouts/MainLayout.jsx (tạo thư mục layouts nếu chưa có)
+
 import React from 'react';
 import Sidebar from '../components/Sidebar';
 import Chatbox from '../components/Chatbox';
@@ -10,7 +10,7 @@ const MainLayout = ({ children }) => {
       <div className="content-area"> {/* Khu vực nội dung chính */}
         {children}
       </div>
-      <Chatbox />
+      {/* <Chatbox /> */}
     </div>
   );
 };

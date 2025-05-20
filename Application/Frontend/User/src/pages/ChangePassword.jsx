@@ -17,7 +17,7 @@ const ChangePassword = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const authToken = localStorage.getItem("authToken");
 
-  // Bước 1: Gửi yêu cầu đổi mật khẩu (gửi OTP)
+  //  Gửi yêu cầu đổi mật khẩu (gửi OTP)
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setError(null);
@@ -57,7 +57,7 @@ const ChangePassword = () => {
     }
   };
 
-  // Bước 2: Xác nhận OTP để đổi mật khẩu
+  // Xác nhận OTP để đổi mật khẩu
   const handleSubmitOtp = async (e) => {
     e.preventDefault();
     setError(null);
