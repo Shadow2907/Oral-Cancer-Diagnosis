@@ -10,7 +10,7 @@ from ..configs.redis import redis_client
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 480
 ACCESS_TOKEN_EXPIRE_MINUTES_ADMIN = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
@@ -184,5 +184,16 @@ async def get_active_user(
     if current_account.status != models.StatusEnum.Active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Account is inactive"
+        )
+    return current_account
+
+
+async def get_admin(
+    db: AsyncSession = Depends(get_db),
+    current_account: models.Account = Depends(get_active_user),
+):
+    if current_account.role != models.RoleEnum.Admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin privileges required"
         )
     return current_account
