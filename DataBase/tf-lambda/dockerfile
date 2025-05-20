@@ -1,0 +1,8 @@
+FROM public.ecr.aws/lambda/python:3.9 AS builder
+COPY requirements.txt .
+RUN pip install --user -r requirements.txt
+FROM public.ecr.aws/lambda/python:3.9
+RUN yum install -y libjpeg-turbo-devel zlib-devel gcc opencv opencv-python-headless
+COPY --from=builder /root/.local/lib/python3.9/site-packages/ ${LAMBDA_TASK_ROOT}/
+COPY app.py unet_final_model.h5 ${LAMBDA_TASK_ROOT}
+CMD ["app.lambda_handler"]
